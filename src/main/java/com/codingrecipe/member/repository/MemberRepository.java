@@ -16,4 +16,6 @@ public interface MemberRepository {
     public void deleteByEmail(String email);
 
     public void updatePassword(String email, String password);
+
+    public void updateImage(String email, String imageUrl);
 }

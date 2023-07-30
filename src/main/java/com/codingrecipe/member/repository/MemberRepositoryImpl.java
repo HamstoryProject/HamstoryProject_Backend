@@ -96,16 +96,15 @@ public class MemberRepositoryImpl implements MemberRepository{
         }
     }
 
-//    public void updateImage(String email, MultipartFile img) {
-//        try {
-//            Firestore firestore = FirestoreClient.getFirestore();
-//            String id = getIdByEmail(email);
-//            FileDto fileDto = fileStore.storeFile(img);
-//            firestore.collection(COLLECTION_NAME).document(id).update("memberProfile", fileDto.getSaveFilename());
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
+    public void updateImage(String email, String imageUrl) {
+        try {
+            Firestore firestore = FirestoreClient.getFirestore();
+            String id = getIdByEmail(email);
+            firestore.collection(COLLECTION_NAME).document(id).update("imageUrl", imageUrl);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     //파라미터로 멤버 찾기
     //field: memberEmail, memberPassword, memberName

@@ -120,13 +120,13 @@ public class MemberServiceImpl implements MemberService{
         }
     }
 
-//    public void updateImage(String email, MultipartFile img) {
-//        try {
-//            memberRepository.updateImage(email, img);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
+    public void updateImage(String email, String imageUrl) {
+        try {
+            memberRepository.updateImage(email, imageUrl);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     //이메일로 토큰 생성 후 리턴
     @Override

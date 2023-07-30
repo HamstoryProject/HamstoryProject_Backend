@@ -20,6 +20,8 @@ public interface MemberService {
 
     public void updatePassword(String email, String password);
 
+    public void updateImage(String email, String imageUrl);
+
     public String createToken(Member member);  //함수야~
 
     public boolean validateToken(String token);  // 이건머지?

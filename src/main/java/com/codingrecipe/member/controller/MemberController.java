@@ -5,6 +5,7 @@ import com.codingrecipe.member.entity.Member;
 import com.codingrecipe.member.dto.LoginDto;
 import com.codingrecipe.member.dto.SignUpDto;
 import com.codingrecipe.member.service.MemberServiceImpl;
+import com.codingrecipe.service.FirebaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/members")
@@ -20,6 +22,9 @@ public class MemberController {
 
     @Autowired
     MemberServiceImpl memberService;
+
+    @Autowired
+    FirebaseService firebaseService;
 
     //회원가입
     //회원가입 정보를 프론트에서 받아와서 토큰발급
@@ -77,7 +82,6 @@ public class MemberController {
     }
 
     //멤버 정보 요청
-    //여기로 오기 전에 인터셉터(BearerAuthInterceptor) 먼저 실행됨
     //프론트에서 토큰을 보내면 그 토큰을 해석해서 이메일, 닉네임, 페스워드를 프론트에 보내줌
     @GetMapping("")
     public ResponseEntity<Member> getMember(HttpServletRequest request){
@@ -121,13 +125,17 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-//    @PutMapping("/img")
-//    public void changeImage(HttpServletRequest request, @RequestPart(value = "img", required = false) MultipartFile img){
-//        try {
-//            String email = JwtUtil.getEmail(request);
-//            memberService.updateImage(email, img);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
+    @PutMapping("/img")
+    public ResponseEntity<?> changeImage(HttpServletRequest request, @RequestPart(value = "img", required = false) MultipartFile img) {
+        try {
+            String email = JwtUtil.getEmail(request);
+            String imageUrl = firebaseService.uploadFile(img, "profile_images/" + UUID.randomUUID());
+            memberService.updateImage(email, imageUrl);
+            System.out.println(">>> image url: " + imageUrl);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
 }

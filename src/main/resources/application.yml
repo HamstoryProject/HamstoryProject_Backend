@@ -6,3 +6,5 @@ security:
     token:
       secret-key: secretsecretsecretsecretsecret
       expire-length: 3600000
+app:
+  firebase-configuration-file: ./serviceAccountKey.json

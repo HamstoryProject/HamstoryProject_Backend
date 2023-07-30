@@ -13,6 +13,7 @@ public class Member {
     private String memberEmail;
     private String memberPassword;
     private String memberName;
+    private String imageUrl;
 
     public Member(SignUpDto signUpDto){
         this.memberEmail = signUpDto.getEmail();
