@@ -2,6 +2,7 @@ package com.codingrecipe.member.service;
 
 import com.codingrecipe.member.dto.LoginDto;
 import com.codingrecipe.member.entity.Member;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public interface MemberService {
 
     public void updatePassword(String email, String password);
 
-    public void updateImage(String email, String imageUrl);
+    public void updateImage(String email, MultipartFile img);
 
     public String createToken(Member member);  //함수야~
 

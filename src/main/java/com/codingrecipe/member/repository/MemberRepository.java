@@ -17,5 +17,5 @@ public interface MemberRepository {
 
     public void updatePassword(String email, String password);
 
-    public void updateImage(String email, String imageUrl);
+    public String updateImage(String email, String imageUrl);
 }

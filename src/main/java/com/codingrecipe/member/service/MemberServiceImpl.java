@@ -4,17 +4,22 @@ import com.codingrecipe.member.entity.Member;
 import com.codingrecipe.member.dto.LoginDto;
 import com.codingrecipe.jwt.JwtTokenProvider;
 import com.codingrecipe.member.repository.MemberRepositoryImpl;
+import com.codingrecipe.service.FirebaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService{
 
     @Autowired
     MemberRepositoryImpl memberRepository;
+
+    @Autowired
+    FirebaseService firebaseService;
 
     private final JwtTokenProvider jwtTokenProvider;
     public static final String COLLECTION_NAME = "MEMBER";
@@ -120,9 +125,12 @@ public class MemberServiceImpl implements MemberService{
         }
     }
 
-    public void updateImage(String email, String imageUrl) {
+    @Override
+    public void updateImage(String email, MultipartFile img) {
         try {
-            memberRepository.updateImage(email, imageUrl);
+            String imageUrl = firebaseService.uploadFile(img, "profile_images/" + UUID.randomUUID());
+            firebaseService.deleteFile(memberRepository.updateImage(email, imageUrl));
+            System.out.println(">>> image url: " + imageUrl);
         } catch (Exception e){
             e.printStackTrace();
         }

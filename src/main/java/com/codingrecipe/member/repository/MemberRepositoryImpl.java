@@ -96,14 +96,21 @@ public class MemberRepositoryImpl implements MemberRepository{
         }
     }
 
-    public void updateImage(String email, String imageUrl) {
+    @Override
+    public String updateImage(String email, String imageUrl) {
         try {
             Firestore firestore = FirestoreClient.getFirestore();
             String id = getIdByEmail(email);
+            Object object = firestore.collection(COLLECTION_NAME).document(id).get().get().get("imageUrl");
             firestore.collection(COLLECTION_NAME).document(id).update("imageUrl", imageUrl);
+
+            if(object != null){
+                return (String) object;
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
+        return null;
     }
 
     //파라미터로 멤버 찾기

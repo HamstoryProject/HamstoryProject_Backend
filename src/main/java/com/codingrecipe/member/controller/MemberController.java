@@ -5,16 +5,15 @@ import com.codingrecipe.member.entity.Member;
 import com.codingrecipe.member.dto.LoginDto;
 import com.codingrecipe.member.dto.SignUpDto;
 import com.codingrecipe.member.service.MemberServiceImpl;
-import com.codingrecipe.service.FirebaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/members")
@@ -23,13 +22,10 @@ public class MemberController {
     @Autowired
     MemberServiceImpl memberService;
 
-    @Autowired
-    FirebaseService firebaseService;
-
     //회원가입
     //회원가입 정보를 프론트에서 받아와서 토큰발급
-    @PostMapping("/create")
-    public String create(@RequestBody SignUpDto signUpDto) {
+    @PostMapping(value = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public String create(@RequestPart(value = "data") SignUpDto signUpDto, @RequestPart(value = "img", required = false) MultipartFile img) {
         try{
             Member member = new Member(signUpDto);
 
@@ -40,6 +36,7 @@ public class MemberController {
             if(token != null){
                 System.out.println(">>> created: " + member.getMemberEmail());
                 System.out.println(">>> token: " + token);
+                memberService.updateImage(member.getMemberEmail(), img);
             }else{
                 System.out.println(">>> create failed");
             }
@@ -129,9 +126,7 @@ public class MemberController {
     public ResponseEntity<?> changeImage(HttpServletRequest request, @RequestPart(value = "img", required = false) MultipartFile img) {
         try {
             String email = JwtUtil.getEmail(request);
-            String imageUrl = firebaseService.uploadFile(img, "profile_images/" + UUID.randomUUID());
-            memberService.updateImage(email, imageUrl);
-            System.out.println(">>> image url: " + imageUrl);
+            memberService.updateImage(email, img);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
