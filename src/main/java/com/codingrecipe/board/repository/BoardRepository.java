@@ -7,13 +7,15 @@ import java.util.Optional;
 
 public interface BoardRepository {
 
-    public void save(Board board);
+    void save(Board board);
 
-    public void delete(String id);
+    void update(Board board);
 
-    public Optional<Board> findById(Long id);
+    void delete(Long id);
 
-    public List<Board> findAll();
+    Optional<Board> findById(Long id);
 
-    public List<Board> findByMemberName(String name);
+    List<Board> findAll();
+
+    List<Board> findByMemberName(String name);
 }

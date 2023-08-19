@@ -31,10 +31,20 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public void delete(String id){
+    public void update(Board board) {
+        try {
+            Firestore firestore = FirestoreClient.getFirestore();
+            firestore.collection(COLLECTION_NAME).document(String.valueOf(board.getId())).set(board);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(Long id){
         try{
             Firestore firestore = FirestoreClient.getFirestore();
-            firestore.collection(COLLECTION_NAME).document(id).delete();
+            firestore.collection(COLLECTION_NAME).document(String.valueOf(id)).delete();
         } catch (Exception e) {
             e.printStackTrace();
         }

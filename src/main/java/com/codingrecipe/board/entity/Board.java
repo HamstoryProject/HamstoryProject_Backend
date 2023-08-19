@@ -1,7 +1,10 @@
 package com.codingrecipe.board.entity;
 
+import com.codingrecipe.board.dto.BoardRequestDto;
 import lombok.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Getter   // get 메소드를 자동으로 만들어줌
@@ -20,4 +23,14 @@ public class Board {
     private String category; //카테고리
     private List<String> imageUrl;
     //private LocalDateTime boardUpdatedTime;  // 글 수정시간
+
+    public Board (BoardRequestDto boardRequestDto, String name) {
+        this.title = boardRequestDto.getBoardTitle();
+        this.writer = name;
+        this.createdTime = new SimpleDateFormat("yyyy/MM/dd hh:mm").format(new Date(System.currentTimeMillis()));
+        this.hits = 0L;
+        this.likes = 0L;
+        this.contents = boardRequestDto.getBoardContents();
+        this.category = "자유게시판";
+    }
 }

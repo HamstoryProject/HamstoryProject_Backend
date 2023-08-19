@@ -7,14 +7,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FirebaseService {
 
     String firebaseBucket = "hamstory-32e2f.appspot.com";
 
-    public String uploadFile(MultipartFile file, String filename){
+    public String uploadFile(MultipartFile file, String path){
         try {
+            String filename = path + UUID.randomUUID();
             if(file == null) {
                 return null;
             }
@@ -28,6 +32,26 @@ public class FirebaseService {
         return null;
     }
 
+    public List<String> uploadAll(List<MultipartFile> files, String path) {
+        try {
+            if(files != null) {
+                List<String> urlList = new ArrayList<>();
+                for(MultipartFile file : files) {
+                    if(!file.isEmpty()) {
+                        String url = uploadFile(file, path);
+                        if(url != null) {
+                            urlList.add(url);
+                        }
+                    }
+                }
+                return urlList;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void deleteFile(String fileUrl) {
         try {
             if(fileUrl == null) {
@@ -35,8 +59,19 @@ public class FirebaseService {
             }
             Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
             String filename = getFilename(fileUrl);
-            //System.out.println(">>> filename : " + filename);
             bucket.get(filename).delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteAll(List<String> fileList) {
+        try {
+            if(fileList != null) {
+                for(String url : fileList) {
+                    deleteFile(url);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

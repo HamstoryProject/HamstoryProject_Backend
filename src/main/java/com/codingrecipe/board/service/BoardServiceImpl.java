@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,20 +26,12 @@ public class BoardServiceImpl implements BoardService{
     @Autowired
     FirebaseService firebaseService;
 
-    public static final String COLLECTION_NAME = "BOARD";
+    static final String IMAGE_PATH = "board_images/";
 
     @Override
     public void save(Board board, List<MultipartFile> files) {
         try{
-            List<String> urlList = new ArrayList<>();
-            for(MultipartFile file : files) {
-                String url = firebaseService.uploadFile(file, "board_images/" + UUID.randomUUID());
-                if(url != null) {
-                    urlList.add(url);
-                }
-            }
-
-            board.setImageUrl(urlList);
+            board.setImageUrl(firebaseService.uploadAll(files, IMAGE_PATH));
             boardRepository.save(board);
         } catch (Exception e){
             e.printStackTrace();
@@ -49,16 +39,26 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public boolean delete(String id){
+    public void update(Board board, List<MultipartFile> files) {
+        try {
+            List<String> originalImage = board.getImageUrl();
+            firebaseService.deleteAll(originalImage);
+            board.setImageUrl(firebaseService.uploadAll(files, IMAGE_PATH));
+            boardRepository.update(board);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean delete(Long id){
         try{
-            Optional<Board> boardOptional = boardRepository.findById(Long.valueOf(id));
+            Optional<Board> boardOptional = boardRepository.findById(id);
             if(boardOptional.isPresent()) {
                 List<String> urlList = boardOptional.get().getImageUrl();
-                for(String url : urlList) {
-                    firebaseService.deleteFile(url);
-                }
-                commentRepository.deleteByBoardId(Long.valueOf(id));
-                likeRepository.deleteByBoardId(Long.valueOf(id));
+                firebaseService.deleteAll(urlList);
+                commentRepository.deleteByBoardId(id);
+                likeRepository.deleteByBoardId(id);
                 boardRepository.delete(id);
                 return true;
             }

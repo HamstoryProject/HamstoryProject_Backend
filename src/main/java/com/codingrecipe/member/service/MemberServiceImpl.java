@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService{
@@ -22,7 +21,8 @@ public class MemberServiceImpl implements MemberService{
     FirebaseService firebaseService;
 
     private final JwtTokenProvider jwtTokenProvider;
-    public static final String COLLECTION_NAME = "MEMBER";
+
+    static final String IMAGE_PATH = "profile_images/";
 
     public MemberServiceImpl(JwtTokenProvider jwtTokenProvider){
         this.jwtTokenProvider = jwtTokenProvider;
@@ -128,7 +128,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void updateImage(String email, MultipartFile img) {
         try {
-            String imageUrl = firebaseService.uploadFile(img, "profile_images/" + UUID.randomUUID());
+            String imageUrl = firebaseService.uploadFile(img, IMAGE_PATH);
             firebaseService.deleteFile(memberRepository.updateImage(email, imageUrl));
             System.out.println(">>> image url: " + imageUrl);
         } catch (Exception e){

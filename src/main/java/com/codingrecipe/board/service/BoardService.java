@@ -10,11 +10,13 @@ public interface BoardService {
 
     void save(Board board, List<MultipartFile> files);
 
+    void update(Board board, List<MultipartFile> files);
+
     Optional<Board> findById(Long id);
 
     List<Board> findAll();
 
-    boolean delete(String postId);
+    boolean delete(Long postId);
 
     List<Board> findByMemberName(String name);
 }
