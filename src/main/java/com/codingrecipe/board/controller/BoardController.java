@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,9 @@ public class BoardController {
     BoardServiceImpl boardService;
 
     @PostMapping("") //  프론트에서 작성할 게시글의 정보와 토큰을 보내주면 게시글을 저장
-    public ResponseEntity<?> save(@RequestBody BoardRequestDto boardForm, HttpServletRequest request) {
+    public ResponseEntity<?> save(@RequestPart(value = "data") BoardRequestDto boardForm,
+                                  @RequestPart(value = "files") List<MultipartFile> files,
+                                  HttpServletRequest request) {
         try{
             //JwtUtil에서 유효성 검사 후 닉네임 받아옴
             String name = JwtUtil.getName(request);
@@ -38,7 +41,7 @@ public class BoardController {
             board.setLikes(0L);
             board.setContents(boardForm.getBoardContents());
             board.setCategory("자유게시판");
-            boardService.save(board);
+            boardService.save(board, files);
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
@@ -51,12 +54,14 @@ public class BoardController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") String id) {
         try{
-            boardService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            if(boardService.delete(id)){
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("")   //  프론트로 모든 게시글 리스트 보냄

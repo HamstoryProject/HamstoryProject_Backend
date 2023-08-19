@@ -4,12 +4,16 @@ import com.codingrecipe.board.entity.Board;
 import com.codingrecipe.board.repository.BoardRepositoryImpl;
 import com.codingrecipe.board.repository.CommentRepositoryImpl;
 import com.codingrecipe.board.repository.LikeRepositoryImpl;
+import com.codingrecipe.service.FirebaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +25,23 @@ public class BoardServiceImpl implements BoardService{
     CommentRepositoryImpl commentRepository;
     @Autowired
     LikeRepositoryImpl likeRepository;
+    @Autowired
+    FirebaseService firebaseService;
 
     public static final String COLLECTION_NAME = "BOARD";
 
     @Override
-    public void save(Board board) {
+    public void save(Board board, List<MultipartFile> files) {
         try{
+            List<String> urlList = new ArrayList<>();
+            for(MultipartFile file : files) {
+                String url = firebaseService.uploadFile(file, "board_images/" + UUID.randomUUID());
+                if(url != null) {
+                    urlList.add(url);
+                }
+            }
+
+            board.setImageUrl(urlList);
             boardRepository.save(board);
         } catch (Exception e){
             e.printStackTrace();
@@ -34,14 +49,23 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public void delete(String id){
+    public boolean delete(String id){
         try{
-            commentRepository.deleteByBoardId(Long.valueOf(id));
-            likeRepository.deleteByBoardId(Long.valueOf(id));
-            boardRepository.delete(id);
+            Optional<Board> boardOptional = boardRepository.findById(Long.valueOf(id));
+            if(boardOptional.isPresent()) {
+                List<String> urlList = boardOptional.get().getImageUrl();
+                for(String url : urlList) {
+                    firebaseService.deleteFile(url);
+                }
+                commentRepository.deleteByBoardId(Long.valueOf(id));
+                likeRepository.deleteByBoardId(Long.valueOf(id));
+                boardRepository.delete(id);
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @Override

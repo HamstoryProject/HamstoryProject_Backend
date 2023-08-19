@@ -1,19 +1,20 @@
 package com.codingrecipe.board.service;
 
 import com.codingrecipe.board.entity.Board;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BoardService {
 
-    public void save(Board board);
+    void save(Board board, List<MultipartFile> files);
 
-    public Optional<Board> findById(Long id);
+    Optional<Board> findById(Long id);
 
-    public List<Board> findAll();
+    List<Board> findAll();
 
-    public void delete(String postId);
+    boolean delete(String postId);
 
-    public List<Board> findByMemberName(String name);
+    List<Board> findByMemberName(String name);
 }

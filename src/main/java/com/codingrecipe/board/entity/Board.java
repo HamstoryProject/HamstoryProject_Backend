@@ -2,6 +2,8 @@ package com.codingrecipe.board.entity;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter   // get 메소드를 자동으로 만들어줌
 @Setter   // set 메소드를 자동으로 만들어줌
 @ToString  // 필드값 확인할 때 사용
@@ -16,5 +18,6 @@ public class Board {
     private Long likes; // 좋아요수
     private String contents;
     private String category; //카테고리
+    private List<String> imageUrl;
     //private LocalDateTime boardUpdatedTime;  // 글 수정시간
 }
