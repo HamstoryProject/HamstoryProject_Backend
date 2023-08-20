@@ -3,15 +3,18 @@ package com.codingrecipe.board.service;
 import com.codingrecipe.board.entity.Comment;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentService {
 
-    public void save(Comment comment);
+    void save(Comment comment);
 
-    public void delete(String id);
+    void delete(Long id);
 
-    public List<Comment> findByBoardId(Long boardId);
+    List<Comment> findByBoardId(Long boardId);
 
-    public List<Comment> findAll();
+    List<Comment> findAll();
+
+    Optional<Comment> findById(Long id);
 
 }

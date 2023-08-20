@@ -91,10 +91,12 @@ public class MemberController {
                 System.out.println(">>> requested member: " + email);
                 return ResponseEntity.ok().body(memberOptional.get());
             }
-        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }  catch (Exception e){
             e.printStackTrace();
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /*
@@ -116,10 +118,11 @@ public class MemberController {
             String email = JwtUtil.getEmail(request);
             memberService.updatePassword(email, password);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
             e.printStackTrace();
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PutMapping("/img")
@@ -128,9 +131,10 @@ public class MemberController {
             String email = JwtUtil.getEmail(request);
             memberService.updateImage(email, img);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
             e.printStackTrace();
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

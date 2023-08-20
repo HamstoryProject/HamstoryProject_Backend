@@ -101,8 +101,7 @@ public class BoardController {
     public ResponseEntity<Board> findOne(@PathVariable("id") Long id) {
         try{
             Optional<Board> boardOptional = boardService.findById(id);
-            //boardOptional에 값이 있으면 BOARD로 바꿔서 리턴, 없으면 null 리턴
-            return boardOptional.map(board -> ResponseEntity.ok().body(board)).orElseGet(() -> ResponseEntity.badRequest().body(null));
+            return boardOptional.map(board -> ResponseEntity.ok().body(board)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } catch (Exception e){
             e.printStackTrace();
         } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

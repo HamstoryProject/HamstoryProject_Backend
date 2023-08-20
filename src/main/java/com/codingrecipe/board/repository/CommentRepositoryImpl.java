@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CommentRepositoryImpl implements CommentRepository{
@@ -30,10 +31,10 @@ public class CommentRepositoryImpl implements CommentRepository{
     }
 
     @Override
-    public void delete(String id){
+    public void delete(Long id){
         try{
             Firestore firestore = FirestoreClient.getFirestore();
-            firestore.collection(COLLECTION_NAME).document(id).delete();
+            firestore.collection(COLLECTION_NAME).document(String.valueOf(id)).delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,7 +45,7 @@ public class CommentRepositoryImpl implements CommentRepository{
         try {
             List<Comment> commentList = findByBoardId(boardId);
             for (Comment comment : commentList) {
-                delete(String.valueOf(comment.getCommentId()));
+                delete(comment.getCommentId());
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -92,7 +93,7 @@ public class CommentRepositoryImpl implements CommentRepository{
         try{
             Firestore firestore = FirestoreClient.getFirestore();
 
-            ApiFuture<QuerySnapshot> future = firestore.collection("COMMENT").get();
+            ApiFuture<QuerySnapshot> future = firestore.collection(COLLECTION_NAME).get();
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
             List<Comment> commentList = new ArrayList<>();
 
@@ -106,6 +107,18 @@ public class CommentRepositoryImpl implements CommentRepository{
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Optional<Comment> findById(Long id) {
+        try {
+            Firestore firestore = FirestoreClient.getFirestore();
+            DocumentSnapshot document = firestore.collection(COLLECTION_NAME).document(String.valueOf(id)).get().get();
+            return Optional.ofNullable(document.toObject(Comment.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     private Long createCommentId() {

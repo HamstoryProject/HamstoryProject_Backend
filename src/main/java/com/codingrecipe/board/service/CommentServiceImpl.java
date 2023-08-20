@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -15,8 +16,6 @@ public class CommentServiceImpl implements CommentService{
 
     @Autowired
     CommentRepositoryImpl commentRepository;
-
-    public static final String COLLECTION_NAME = "COMMENT";
 
     @Override
     public void save(Comment comment) {
@@ -28,7 +27,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void delete(String id){
+    public void delete(Long id){
         try{
             commentRepository.delete(id);
         } catch (Exception e) {
@@ -54,5 +53,15 @@ public class CommentServiceImpl implements CommentService{
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Optional<Comment> findById(Long id) {
+        try {
+            return commentRepository.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 }

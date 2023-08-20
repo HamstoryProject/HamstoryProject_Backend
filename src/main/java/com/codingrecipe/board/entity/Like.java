@@ -11,4 +11,9 @@ public class Like {
     private Long likeId;
     private Long boardId;
     private String memberNickname;
+
+    public Like (Long boardId, String name) {
+        this.boardId = boardId;
+        this.memberNickname = name;
+    }
 }

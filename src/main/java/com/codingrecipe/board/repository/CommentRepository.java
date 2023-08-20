@@ -3,16 +3,19 @@ package com.codingrecipe.board.repository;
 import com.codingrecipe.board.entity.Comment;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository {
 
-    public void save(Comment comment);
+    void save(Comment comment);
 
-    public void delete(String id);
+    void delete(Long id);
 
-    public void deleteByBoardId(Long boardId);
+    void deleteByBoardId(Long boardId);
 
-    public List<Comment> findByBoardId(Long boardId);
+    List<Comment> findByBoardId(Long boardId);
 
-    public List<Comment> findAll();
+    List<Comment> findAll();
+
+    Optional<Comment> findById(Long id);
 }
