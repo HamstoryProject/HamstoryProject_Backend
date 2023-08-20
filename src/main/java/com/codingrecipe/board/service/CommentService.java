@@ -9,6 +9,8 @@ public interface CommentService {
 
     void save(Comment comment);
 
+    void update(Comment comment);
+
     void delete(Long id);
 
     List<Comment> findByBoardId(Long boardId);

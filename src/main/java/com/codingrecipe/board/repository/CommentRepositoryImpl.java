@@ -31,6 +31,16 @@ public class CommentRepositoryImpl implements CommentRepository{
     }
 
     @Override
+    public void update(Comment comment) {
+        try {
+            Firestore firestore = FirestoreClient.getFirestore();
+            firestore.collection(COLLECTION_NAME).document(String.valueOf(comment.getCommentId())).set(comment);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void delete(Long id){
         try{
             Firestore firestore = FirestoreClient.getFirestore();

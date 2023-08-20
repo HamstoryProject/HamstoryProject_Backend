@@ -27,6 +27,15 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
+    public void update(Comment comment) {
+        try {
+            commentRepository.update(comment);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void delete(Long id){
         try{
             commentRepository.delete(id);

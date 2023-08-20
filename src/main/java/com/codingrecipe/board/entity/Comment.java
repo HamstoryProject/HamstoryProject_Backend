@@ -1,6 +1,7 @@
 package com.codingrecipe.board.entity;
 
 import com.codingrecipe.board.dto.CommentRequestDto;
+import com.codingrecipe.board.dto.CommentUpdateDto;
 import lombok.*;
 
 import java.text.SimpleDateFormat;
@@ -24,6 +25,15 @@ public class Comment {
         this.contents = commentRequestDto.getCommentContents();
         this.likes = 0;
         this.createdTime = new SimpleDateFormat("yyyy/MM/dd hh:mm").format(new Date(System.currentTimeMillis()));
+    }
+
+    public Comment(Comment origin, CommentUpdateDto commentUpdateDto) {
+        this.commentId = origin.getCommentId();
+        this.boardId = origin.getBoardId();
+        this.writer = origin.getWriter();
+        this.contents = commentUpdateDto.getContents();
+        this.likes = origin.getLikes();
+        this.createdTime = origin.getCreatedTime();
     }
 
 }

@@ -9,6 +9,8 @@ public interface CommentRepository {
 
     void save(Comment comment);
 
+    void update(Comment comment);
+
     void delete(Long id);
 
     void deleteByBoardId(Long boardId);

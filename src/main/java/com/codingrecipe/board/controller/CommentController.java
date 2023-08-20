@@ -1,5 +1,6 @@
 package com.codingrecipe.board.controller;
 
+import com.codingrecipe.board.dto.CommentUpdateDto;
 import com.codingrecipe.board.entity.Comment;
 import com.codingrecipe.board.dto.CommentRequestDto;
 import com.codingrecipe.board.service.BoardServiceImpl;
@@ -37,6 +38,30 @@ public class CommentController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
+            e.printStackTrace();
+        } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable("id") Long id,
+                                           @RequestBody CommentUpdateDto commentUpdateDto,
+                                           HttpServletRequest request) {
+        try {
+            Optional<Comment> commentOptional = commentService.findById(id);
+            if(commentOptional.isPresent()) {
+                String name = JwtUtil.getName(request);
+                Comment origin = commentOptional.get();
+                if(origin.getWriter().equals(name)) {
+                    Comment comment = new Comment(origin, commentUpdateDto);
+                    commentService.update(comment);
+                    return new ResponseEntity<>(HttpStatus.OK);
+                }
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
             e.printStackTrace();
         } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
