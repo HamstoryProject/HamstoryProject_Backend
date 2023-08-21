@@ -112,10 +112,10 @@ public class MemberController {
     }
      */
 
-    @PutMapping("")
-    public ResponseEntity<?> changePassword(HttpServletRequest request, @RequestBody String password){
+    @PutMapping("")  // 수정할 때 일반적으로 PutMapping을 함
+    public ResponseEntity<?> changePassword(HttpServletRequest request, @RequestBody String password){  // 비번 바꾸기
         try {
-            String email = JwtUtil.getEmail(request);
+            String email = JwtUtil.getEmail(request);  // 사용자 이메일 가져오기
             memberService.updatePassword(email, password);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -126,7 +126,7 @@ public class MemberController {
     }
 
     @PutMapping("/img")
-    public ResponseEntity<?> changeImage(HttpServletRequest request, @RequestPart(value = "img", required = false) MultipartFile img) {
+    public ResponseEntity<?> changeImage(HttpServletRequest request, @RequestPart(value = "img", required = false) MultipartFile img) {  // 프사 바꾸기
         try {
             String email = JwtUtil.getEmail(request);
             memberService.updateImage(email, img);

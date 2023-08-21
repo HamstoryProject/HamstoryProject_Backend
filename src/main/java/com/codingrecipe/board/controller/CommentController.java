@@ -88,11 +88,16 @@ public class CommentController {
     }
 
     @GetMapping("")   //  프론트로 해당 게시글의 댓글 리스트 보냄
-    public ResponseEntity<List<Comment>> findComments(@RequestParam("boardId") Long boardId) {
+    public ResponseEntity<?> findComments(@RequestParam("boardId") Long boardId) {  // 바디에 넣을 값이 안정해졌을 때 {?}를 하면 된다
         try{
-            if(boardService.findById(boardId).isPresent()) {
-                List<Comment> list = commentService.findByBoardId(boardId);
-                return ResponseEntity.ok().body(list);
+            if(boardService.findById(boardId).isPresent()) {  // 보드아이디에 해당하는 보드가 있다묜~
+                List<Comment> list = commentService.findByBoardId(boardId);  // 댓글 리스트 보내주는거
+                if(list.isEmpty()) {  // 댓글 리스트가 비어있다면
+                    return ResponseEntity.ok().body(false);
+                }
+                else {
+                    return ResponseEntity.ok().body(list);  // 댓글 리스트를 프론트로 보내주는거
+                }
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e){

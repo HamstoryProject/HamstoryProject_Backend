@@ -32,31 +32,31 @@ public class BoardController {
             Board board = new Board(boardRequestDto, name);
             boardService.save(board, files);
 
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.OK);  // 정상적인 응답
+        } catch (IllegalArgumentException e) {  // 예외처리 1. 토큰 유효성 검사 결과가 유효하지 않을 때
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e){
+        } catch (Exception e){  // 예외처리 2. 코드 에러 났을 때
             e.printStackTrace();
         } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateBoard(@PathVariable("id") Long id,
+    public ResponseEntity<?> updateBoard(@PathVariable("id") Long id,  // 게시물 수정
                                     @RequestPart(value = "data") BoardRequestDto boardRequestDto,
                                     @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                     HttpServletRequest request) {
         try {
-            Optional<Board> boardOptional = boardService.findById(id);
-            if(boardOptional.isPresent()) {
+            Optional<Board> boardOptional = boardService.findById(id);  // 해당 아이디의 게시물을 받아옴
+            if(boardOptional.isPresent()) {  // boardOptional이 null 값일 때(아이디 잘못 보냈을때)
                 String name = JwtUtil.getName(request);
                 Board board = boardOptional.get();
-                if(board.getWriter().equals(name)) {
-                    board.setTitle(boardRequestDto.getBoardTitle());
-                    board.setContents(boardRequestDto.getBoardContents());
-                    boardService.update(board, files);
-                    return new ResponseEntity<>(HttpStatus.OK);
+                if(board.getWriter().equals(name)) {  // 게시물 게시자 닉네임 받아와서 작성자 닉네임과 동일한지 확인
+                    board.setTitle(boardRequestDto.getBoardTitle());  // 제목 수정
+                    board.setContents(boardRequestDto.getBoardContents());  // 내용 수정
+                    boardService.update(board, files);  // 보드 수정한거 업데이트와 이미지 수정
+                    return new ResponseEntity<>(HttpStatus.OK);  //
                 }
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 다른 사람이면 게시물 수정 권한이 없음
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (IllegalArgumentException e) {
