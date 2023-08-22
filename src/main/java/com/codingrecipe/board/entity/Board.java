@@ -31,7 +31,8 @@ public class Board {
         this.createdTime = new SimpleDateFormat("yyyy/MM/dd hh:mm").format(new Date(System.currentTimeMillis()));
         this.hits = 0L;
         this.contents = boardRequestDto.getBoardContents();
-        this.category = "자유게시판";
+        //this.category = "자유게시판";
+        this.category = boardRequestDto.getBoardCategory();
         this.likers = new ArrayList<>();
     }
 }

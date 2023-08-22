@@ -11,4 +11,5 @@ import lombok.Setter;
 public class BoardRequestDto {
     private String boardTitle;
     private String boardContents;
+    private String boardCategory;
 }

@@ -31,10 +31,19 @@ public class BoardController {
             //JwtUtil에서 유효성 검사 후 닉네임 받아옴
             String name = JwtUtil.getName(request);
 
-            Board board = new Board(boardRequestDto, name);
-            boardService.save(board, files);
-
-            return new ResponseEntity<>(HttpStatus.OK);  // 정상적인 응답
+            String category = boardRequestDto.getBoardCategory();
+            if(category.equals("자유게시판") || category.equals("앨범게시판")) {
+                if(category.equals("앨범게시판")) {
+                    if(files == null || files.get(0).isEmpty()) {
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                    files = files.subList(0, 1);
+                }
+                Board board = new Board(boardRequestDto, name);
+                boardService.save(board, files);
+                return new ResponseEntity<>(HttpStatus.OK);  // 정상적인 응답
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (IllegalArgumentException e) {  // 예외처리 1. 토큰 유효성 검사 결과가 유효하지 않을 때
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e){  // 예외처리 2. 코드 에러 났을 때
