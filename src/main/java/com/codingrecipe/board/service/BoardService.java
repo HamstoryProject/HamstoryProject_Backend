@@ -19,4 +19,6 @@ public interface BoardService {
     boolean delete(Long postId);
 
     List<Board> findByMemberName(String name);
+
+    void updateLike(Board board, String email);
 }

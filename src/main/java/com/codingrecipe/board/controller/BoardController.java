@@ -1,5 +1,6 @@
 package com.codingrecipe.board.controller;
 
+import com.codingrecipe.board.dto.BoardResponseDto;
 import com.codingrecipe.board.entity.Board;
 import com.codingrecipe.board.dto.BoardRequestDto;
 import com.codingrecipe.board.service.BoardServiceImpl;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/boards")
@@ -87,34 +89,52 @@ public class BoardController {
     }
 
     @GetMapping("")   //  프론트로 모든 게시글 리스트 보냄
-    public ResponseEntity<List<Board>> findAll() {
+    public ResponseEntity<List<BoardResponseDto>> findAll() {
         try{
             List<Board> list = boardService.findAll();
 
-            return ResponseEntity.ok().body(list);
+            return ResponseEntity.ok().body(list.stream().map(BoardResponseDto::new).collect(Collectors.toList()));
         } catch (Exception e){
             e.printStackTrace();
         } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/{id}")  //  프론트에서 게시글의 아이디를 보내주면 그 아이디를 가진 게시글 찾아서 정보 리턴
-    public ResponseEntity<Board> findOne(@PathVariable("id") Long id) {
+    public ResponseEntity<BoardResponseDto> findOne(@PathVariable("id") Long id) {
         try{
             Optional<Board> boardOptional = boardService.findById(id);
-            return boardOptional.map(board -> ResponseEntity.ok().body(board)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            return boardOptional.map(board -> ResponseEntity.ok().body(new BoardResponseDto(board))).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            //return boardOptional.map(board -> ResponseEntity.ok().body(board)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } catch (Exception e){
             e.printStackTrace();
         } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<Board>> findMyPosts(HttpServletRequest request){
+    public ResponseEntity<List<BoardResponseDto>> findMyPosts(HttpServletRequest request){
         try {
             String name = JwtUtil.getName(request);
-            return ResponseEntity.ok().body(boardService.findByMemberName(name));
+            return ResponseEntity.ok().body(boardService.findByMemberName(name).stream().map(BoardResponseDto::new).collect(Collectors.toList()));
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
+            e.printStackTrace();
+        } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> likeBoard(@PathVariable("id") Long id, HttpServletRequest request) {
+        try {
+            String email = JwtUtil.getEmail(request);
+            Optional<Board> boardOptional = boardService.findById(id);
+            if(boardOptional.isPresent()) {
+                boardService.updateLike(boardOptional.get(), email);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
             e.printStackTrace();
         } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

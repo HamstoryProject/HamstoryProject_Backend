@@ -18,4 +18,6 @@ public interface BoardRepository {
     List<Board> findAll();
 
     List<Board> findByMemberName(String name);
+
+    void updateLike(Board board, String email);
 }

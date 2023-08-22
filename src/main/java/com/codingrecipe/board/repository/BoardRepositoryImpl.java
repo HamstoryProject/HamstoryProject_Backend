@@ -130,6 +130,23 @@ public class BoardRepositoryImpl implements BoardRepository {
         return null;
     }
 
+    @Override
+    public void updateLike(Board board, String email) {
+        try {
+            List<String> likers = board.getLikers();
+            if(likers.contains(email)) {
+                likers.remove(email);
+            } else {
+                likers.add(email);
+            }
+
+            Firestore firestore = FirestoreClient.getFirestore();
+            firestore.collection(COLLECTION_NAME).document(String.valueOf(board.getId())).set(board);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //게시물 아이디 생성
     private Long createBoardId() {
         try{

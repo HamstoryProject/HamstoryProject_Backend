@@ -3,7 +3,6 @@ package com.codingrecipe.board.service;
 import com.codingrecipe.board.entity.Board;
 import com.codingrecipe.board.repository.BoardRepositoryImpl;
 import com.codingrecipe.board.repository.CommentRepositoryImpl;
-import com.codingrecipe.board.repository.LikeRepositoryImpl;
 import com.codingrecipe.service.FirebaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ public class BoardServiceImpl implements BoardService{
     BoardRepositoryImpl boardRepository;
     @Autowired
     CommentRepositoryImpl commentRepository;
-    @Autowired
-    LikeRepositoryImpl likeRepository;
     @Autowired
     FirebaseService firebaseService;
 
@@ -58,7 +55,7 @@ public class BoardServiceImpl implements BoardService{
                 List<String> urlList = boardOptional.get().getImageUrl();
                 firebaseService.deleteAll(urlList);
                 commentRepository.deleteByBoardId(id);
-                likeRepository.deleteByBoardId(id);
+                //likeRepository.deleteByBoardId(id);
                 boardRepository.delete(id);
                 return true;
             }
@@ -96,5 +93,14 @@ public class BoardServiceImpl implements BoardService{
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void updateLike(Board board, String email) {
+        try {
+            boardRepository.updateLike(board, email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
