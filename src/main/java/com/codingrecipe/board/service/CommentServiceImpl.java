@@ -73,4 +73,13 @@ public class CommentServiceImpl implements CommentService{
         }
         return Optional.empty();
     }
+
+    @Override
+    public void addLikers(Comment comment, String commentLiker) {
+        try{
+            commentRepository.addLikers(comment, commentLiker);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

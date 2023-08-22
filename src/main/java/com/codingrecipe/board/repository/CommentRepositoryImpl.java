@@ -5,6 +5,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Repository;
+import org.yaml.snakeyaml.events.CommentEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,6 +132,7 @@ public class CommentRepositoryImpl implements CommentRepository{
         return Optional.empty();
     }
 
+
     private Long createCommentId() {
         try{
             Firestore firestore = FirestoreClient.getFirestore();
@@ -145,6 +147,34 @@ public class CommentRepositoryImpl implements CommentRepository{
             documentReference.update("id", CommentId + 1);  // id를 가져온 뒤 +1한 것을 업데이트해서 저장
 
             return CommentId;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void addLikers(Comment comment, String commentLiker) {  // 댓글을 좋아요 한 사람 닉네임을 likers 배열에 담는 함수
+        try {
+            Firestore firestore = FirestoreClient.getFirestore();
+
+            if (!(isDuplicate(comment, commentLiker))) {
+                comment.getLikers().add(commentLiker);
+                firestore.collection(COLLECTION_NAME).document(String.valueOf(comment.getCommentId())).set(comment);
+            } else {
+                comment.getLikers().remove(commentLiker);
+                firestore.collection(COLLECTION_NAME).document(String.valueOf(comment.getCommentId())).set(comment);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    private Boolean isDuplicate(Comment comment, String commentLiker){  // 좋아요 중복 검사
+        try{
+            Firestore firestore = FirestoreClient.getFirestore();
+            if (comment.getLikers().contains(commentLiker))  // 댓글을 좋아한 사람 목록에 사용자가 포함되는지 확인
+                return true;
+            return false; // 좋아요 목록에 사용자가 없음
         } catch (Exception e){
             e.printStackTrace();
         }

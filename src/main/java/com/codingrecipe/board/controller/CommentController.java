@@ -88,7 +88,7 @@ public class CommentController {
     }
 
     @GetMapping("")   //  프론트로 해당 게시글의 댓글 리스트 보냄
-    public ResponseEntity<?> findComments(@RequestParam("boardId") Long boardId) {  // 바디에 넣을 값이 안정해졌을 때 {?}를 하면 된다
+    public ResponseEntity<?> findComments(@RequestParam("boardId") Long boardId) {  // 바디에 넣을 값이 안정해졌을 때 <?>를 하면 된다
         try{
             if(boardService.findById(boardId).isPresent()) {  // 보드아이디에 해당하는 보드가 있다묜~
                 List<Comment> list = commentService.findByBoardId(boardId);  // 댓글 리스트 보내주는거
@@ -116,5 +116,22 @@ public class CommentController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> addLikers(@PathVariable("id") Long id, HttpServletRequest request) {
+        try{
+            Optional<Comment> commentOptional = commentService.findById(id);
+
+            if(commentOptional.isPresent()) {
+                String name = JwtUtil.getName(request);
+                commentService.addLikers(commentOptional.get(), name);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e){
+            e.printStackTrace();
+        } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

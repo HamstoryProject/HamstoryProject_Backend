@@ -51,6 +51,11 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
+    public void likeUpdate(Board board) {
+
+    }
+
+    @Override
     public Optional<Board> findById(Long id){
         try{
             Firestore firestore = FirestoreClient.getFirestore();

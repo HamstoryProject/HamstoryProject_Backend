@@ -12,6 +12,7 @@ public interface BoardRepository {
     void update(Board board);
 
     void delete(Long id);
+    void likeUpdate(Board board);
 
     Optional<Board> findById(Long id);
 

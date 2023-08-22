@@ -19,4 +19,5 @@ public interface CommentService {
 
     Optional<Comment> findById(Long id);
 
+    void addLikers(Comment comment, String commentLiker);
 }

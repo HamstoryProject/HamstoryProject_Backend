@@ -5,7 +5,11 @@ import com.codingrecipe.board.dto.CommentUpdateDto;
 import lombok.*;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import static io.jsonwebtoken.lang.Collections.size;
 
 @Getter   // get 메소드를 자동으로 만들어줌
 @Setter   // set 메소드를 자동으로 만들어줌
@@ -17,13 +21,14 @@ public class Comment {
     private String writer;
     private String contents;
     private int likes;
+    private List<String> likers = new ArrayList<String>();
     private String createdTime;
 
     public Comment(CommentRequestDto commentRequestDto, String name) {
         this.boardId = Long.valueOf(commentRequestDto.getBoardId());
         this.writer = name;
         this.contents = commentRequestDto.getCommentContents();
-        this.likes = 0;
+        this.likes = size(likers);
         this.createdTime = new SimpleDateFormat("yyyy/MM/dd hh:mm").format(new Date(System.currentTimeMillis()));
     }
 
